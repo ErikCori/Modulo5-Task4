@@ -2,10 +2,7 @@ package com.codeoftheweb.salvo.Controller;
 
 
 import com.codeoftheweb.salvo.Model.*;
-import com.codeoftheweb.salvo.Repository.GamePlayerRepository;
-import com.codeoftheweb.salvo.Repository.GameRepository;
-import com.codeoftheweb.salvo.Repository.PlayerRepository;
-import com.codeoftheweb.salvo.Repository.ShipRepository;
+import com.codeoftheweb.salvo.Repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,6 +29,9 @@ public class SalvoController {
 
     @Autowired
     private ShipRepository shipRepository;
+
+    @Autowired
+    private SalvoRepository salvoRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -88,7 +88,7 @@ public class SalvoController {
             dto.put("playerLoggedIn", null);
         }
         GamePlayer gamePlayer = gamePlayerRepository.getOne(gamePlayerId);
-        dto.put("salvoes", gamePlayer.getSalvoes());
+        dto.put("salvoes", gamePlayer.getSalvoes().stream().map(salvo -> salvo.makeSalvoDto()));
         return dto;
     }
 
@@ -182,7 +182,7 @@ public class SalvoController {
     }
     //*****************************************Add ship*********************************************************************
     @RequestMapping(path = "/games/players/{gamePlayerId}/ships",produces = "application/json", method = RequestMethod.POST)
-    public ResponseEntity<Map<String, Object>> addShip (@PathVariable long gamePlayerId,
+    public ResponseEntity<Map<String, Object>> addShips (@PathVariable long gamePlayerId,
                                                         @RequestBody List<ShipPlayer> newShips,
                                                         Authentication authentication){
         GamePlayer gamePlayer = gamePlayerRepository.findById(gamePlayerId).orElse(null);
@@ -198,6 +198,24 @@ public class SalvoController {
         return new ResponseEntity<>(makeMap("done", "Ship added"), HttpStatus.CREATED);
     }
 
+    //********************************Add salvo***************************************************
+    @RequestMapping(path = "/games/players/{gamePlayerId}/salvoes", produces = "application/json", method = RequestMethod.POST)
+    public ResponseEntity<Map<String, Object>> addSalvoes(@PathVariable long gamePlayerId,
+                                                         @RequestBody SalvoPlayer newSalvoes,
+                                                          Authentication authentication){
+        GamePlayer gamePlayer = gamePlayerRepository.findById(gamePlayerId).orElse(null);
+        Player player = playerRepository.findByUsername(authentication.getName());
+        if(isGuest(authentication) || gamePlayer == null || player.getId() != gamePlayer.getPlayer().getId()){
+            return new ResponseEntity<>(makeMap("error", "No player logged in"), HttpStatus.UNAUTHORIZED);
+        }
+        List<Object> salvoes = gamePlayer.getSalvoes().stream().map(salvo -> salvo.makeSalvoDto()).collect(Collectors.toList());
+        List<Object> salvoTurn = salvoes.stream().filter(salvo -> salvo.)
+        if(salvoes.size()>0){
+            return new ResponseEntity<>(makeMap("error", "Player already fire salvoes this turn"), HttpStatus.FORBIDDEN);
+        }
+        Salvo salvo = salvoRepository.save(new Salvo(gamePlayer, newSalvoes.getTurn(), newSalvoes.getSalvoLocations()));
+        return new ResponseEntity<>(makeMap("done", "salvo added"), HttpStatus.CREATED);
+    }
     private Map<String, Object> makeMap (String key, Object value){
         Map<String, Object>  map = new HashMap<>();
         map.put(key, value);
