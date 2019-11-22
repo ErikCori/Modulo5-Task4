@@ -201,19 +201,23 @@ public class SalvoController {
     //********************************Add salvo***************************************************
     @RequestMapping(path = "/games/players/{gamePlayerId}/salvoes", produces = "application/json", method = RequestMethod.POST)
     public ResponseEntity<Map<String, Object>> addSalvoes(@PathVariable long gamePlayerId,
-                                                         @RequestBody SalvoPlayer newSalvoes,
+                                                         @RequestBody List<String> newSalvoes,
                                                           Authentication authentication){
         GamePlayer gamePlayer = gamePlayerRepository.findById(gamePlayerId).orElse(null);
         Player player = playerRepository.findByUsername(authentication.getName());
         if(isGuest(authentication) || gamePlayer == null || player.getId() != gamePlayer.getPlayer().getId()){
             return new ResponseEntity<>(makeMap("error", "No player logged in"), HttpStatus.UNAUTHORIZED);
         }
-        List<Object> salvoes = gamePlayer.getSalvoes().stream().map(salvo -> salvo.makeSalvoDto()).collect(Collectors.toList());
-        List<Object> salvoTurn = salvoes.stream().filter(salvo -> salvo.)
-        if(salvoes.size()>0){
+        Game game = gamePlayer.getGame();
+        List<GamePlayer> gamePlayers= game.getGamePlayers().stream().collect(Collectors.toList());
+        GamePlayer enemyGamePlayer = gamePlayers.get(1);
+        int playerTurn = gamePlayer.getSalvoes().size();
+        int enemyPlayerTurn = enemyGamePlayer.getSalvoes().stream().collect(Collectors.toList()).size();
+        //int turn = salvoes.stream().map(salvo -> salvo.getSalvoLocations()).collect(Collectors.toList()).size();
+        if(playerTurn > enemyPlayerTurn){
             return new ResponseEntity<>(makeMap("error", "Player already fire salvoes this turn"), HttpStatus.FORBIDDEN);
         }
-        Salvo salvo = salvoRepository.save(new Salvo(gamePlayer, newSalvoes.getTurn(), newSalvoes.getSalvoLocations()));
+        Salvo salvo = salvoRepository.save(new Salvo(gamePlayer, playerTurn +1, newSalvoes));
         return new ResponseEntity<>(makeMap("done", "salvo added"), HttpStatus.CREATED);
     }
     private Map<String, Object> makeMap (String key, Object value){
