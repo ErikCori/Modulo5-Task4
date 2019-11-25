@@ -18,6 +18,7 @@ function loadData() {
       //loadGrid();
       if(data.ships.length !=0){
         loadShips(data.ships, true)
+        loadSalvoes(data.salvoes,true);
       }
       else{
       loadShips(data.ships, false);
@@ -269,6 +270,28 @@ const listenBusyCells = function(id){
           }
       }
   }
+}
+/***************************************Load salvoes*********************************/
+let loadSalvoes = function(datos,isTimeToFire){
+  var options ={
+    width: 10,
+    height: 10,
+    verticalMargin: 0,
+    cellHeight: 45,
+    disableResize: true,
+    float: true,
+    disableOneColumnMode: true,
+    staticGrid: isTimeToFire,
+    animate:true
+  }
+  $('.grid-stack').gridstack(options);
+  grid = $('#gridSalvoPlaced').data('gridstack');
+  if(datos.length !=0){
+    datos.forEach
+  }
+
+  createGrid(11, $(".grid-salvoPlaced"), 'salvoPlaced')
+  listenBusyCells('salvoPlaced')
 }
 /************************************Back **************************************/
 function back(){

@@ -72,7 +72,7 @@
 
 
 
-.grid-ships, .grid-shipsPlaced{
+.grid-salvoPlaced, .grid-shipsPlaced{
     background-image: url(ocean.gif);
     background-size: cover;
     border: 2px solid rgb(128,128,128);
@@ -136,5 +136,7 @@
     text-align: center;
     display: block;
 }
-
+#ships, #salvoes{
+    
+}
 

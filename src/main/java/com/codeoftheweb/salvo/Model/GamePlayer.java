@@ -66,6 +66,11 @@ public class GamePlayer {
         Map<String, Object> dto= new LinkedHashMap<>();
         dto.put("id", this.getId());
         dto.put("player", this.player.makePlayerDto());
+        if(this.getShips().size()>0){
+            dto.put("hasShips", "YES");
+        }else{
+            dto.put("hasShips", "NO");
+        }
         return dto;
     }
 }
