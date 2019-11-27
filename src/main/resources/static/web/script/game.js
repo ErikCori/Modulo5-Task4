@@ -15,10 +15,22 @@ function loadData() {
       shipsPlayer = data.ships;
       console.log(shipsPlayer);
       
-      //loadGrid();
+      var gpId = data.id;
+      var player = {};
+      data.gamePlayers.forEach(function(gamePlayer){
+        if(gamePlayer.id == gpId){
+          player = gamePlayer.player
+        }
+      })
+      var salvoPlayer = [];
+      data.salvoes.forEach(function(salvo){
+        if(salvo.player == player.id){
+          salvoPlayer.push(salvo);
+        }
+      })
       if(data.ships.length !=0){
         loadShips(data.ships, true)
-        loadSalvoes(data.salvoes,true);
+        loadSalvoes(salvoPlayer,true);
       }
       else{
       loadShips(data.ships, false);
@@ -70,8 +82,7 @@ let loadShips = function(datos,isStatic){
         height = dataShips[ship.type].height;
       }
       grid.addWidget($('<div id='+ship.type+'><div class="grid-stack-item-content '+ship.type+orientation+'"></div><div/>'),
-      ship.shipLocations[0].charAt(1)-1, ship.shipLocations[0].charCodeAt(0) - 65, 
-      width, height);
+      ship.shipLocations[0].charAt(1)-1, ship.shipLocations[0].charCodeAt(0) - 65, width, height);
     })
   }
   else{
@@ -286,12 +297,22 @@ let loadSalvoes = function(datos,isTimeToFire){
   }
   $('.grid-stack').gridstack(options);
   grid = $('#gridSalvoPlaced').data('gridstack');
+  createGrid(11, $(".grid-salvoPlaced"), 'salvoPlaced');
+  const salvoData ={
+    width: 1,
+    height: 1
+  }
   if(datos.length !=0){
-    datos.forEach
+    datos.forEach(function(salvo){
+      salvo.salvoLocations.forEach(function(salvoLocation){
+        var j = salvoLocation.charCodeAt(0) - 65;
+        var i = parseInt(salvoLocation.charAt(1)-1);
+        $(`#salvoPlaced${j}${i}`).addClass('busy-cell');
+      })
+    })
   }
 
-  createGrid(11, $(".grid-salvoPlaced"), 'salvoPlaced')
-  listenBusyCells('salvoPlaced')
+  //createGrid(11, $(".grid-salvoPlaced"), 'salvoPlaced');
 }
 /************************************Back **************************************/
 function back(){
@@ -300,9 +321,7 @@ function back(){
 
 /**************************************Place ships **************************************/
 function placeShips(){
-  var test = [ { "type": "destroyer", "shipLocations": ["A1", "B1", "C1"] },
-  { "type": "patrol_boat", "shipLocations": ["H5", "H6"] }
-]
+  
   var destroyer = getShipData("destroyer");
   var submarine = getShipData("submarine");
   var patrol_boat = getShipData("patrol_boat");

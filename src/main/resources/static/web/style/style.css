@@ -136,7 +136,7 @@
     text-align: center;
     display: block;
 }
-#ships, #salvoes{
-    
+.salvo{
+    background-color: chocolate;
 }
 
