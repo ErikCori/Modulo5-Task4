@@ -15,7 +15,7 @@ function loadData() {
       shipsPlayer = data.ships;
       console.log(shipsPlayer);
       
-      var gpId = data.id;
+      var gpId = getParameterByName('gp');
       var player = {};
       data.gamePlayers.forEach(function(gamePlayer){
         if(gamePlayer.id == gpId){
@@ -307,10 +307,17 @@ let loadSalvoes = function(datos,isTimeToFire){
       salvo.salvoLocations.forEach(function(salvoLocation){
         var j = salvoLocation.charCodeAt(0) - 65;
         var i = parseInt(salvoLocation.charAt(1)-1);
-        $(`#salvoPlaced${j}${i}`).addClass('busy-cell');
+        $(`#salvoPlaced${j}${i}`).addClass('boom').removeClass("fireSalvo");
       })
     })
   }
+  $('div[id^="salvoPlaced"].grid-cell').click(function(event){
+    if(!$(this).hasClass("boom") && !$(this).hasClass("targetCell") && $(".targetCell").length <5){
+      $(this).addClass("targetCell");
+    }else if($(this).hasClass("targetCell")){
+      $(this).removeClass("targetCell");
+    }
+  })
 
   //createGrid(11, $(".grid-salvoPlaced"), 'salvoPlaced');
 }
@@ -391,4 +398,35 @@ function changeOptions(data){
   else{
     $('#titleGame').hide();
   }
+}
+
+/*$(document).on("click", ".grid-cell", function(){
+  var shots = 0;
+  if(shots<6){
+  $(this).addClass("fireSalvo");
+  shots ++;
+  }
+})*/
+//*****************************Data salvoes ***********************/
+const shotSalvo = function(){
+  var newSalvoes =[];
+  $(".targetCell").each(function(){
+    let location = $(this).attr("id").substring(11);
+    let locationConverted = String.fromCharCode(parseInt(location[0]) + 65) + (parseInt(location[1])+1);
+    newSalvoes.push(locationConverted);
+  })
+  console.log(newSalvoes);
+  $.post({
+    url: "/api/games/players/"+getParameterByName("gp")+"/salvoes",
+    data: JSON.stringify(newSalvoes),
+    dataType: "text",
+    contentType: "application/json",
+  })
+  .done(function(){
+    alert("Salvo added")
+    location.reload();
+  })
+  .fail(function(error){
+    alert(error.responseText.error);
+  })
 }

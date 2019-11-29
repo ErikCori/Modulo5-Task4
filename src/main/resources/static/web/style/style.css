@@ -139,4 +139,13 @@
 .salvo{
     background-color: chocolate;
 }
-
+.boom{
+    background-image: url("ships/boom.jpg");
+    background-size: 85% 100%;
+    background-position: center;
+}
+.targetCell{
+    background-image: url("ships/asdfgg.jpg");
+    background-size: 85% 100%;
+    background-position: center;
+}
