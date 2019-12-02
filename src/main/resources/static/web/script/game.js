@@ -427,6 +427,6 @@ const shotSalvo = function(){
     location.reload();
   })
   .fail(function(error){
-    alert(error.responseText.error);
+    alert(JSON.parse(error.responseText).error);
   })
 }

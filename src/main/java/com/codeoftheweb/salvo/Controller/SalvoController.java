@@ -212,7 +212,9 @@ public class SalvoController {
         if(isGuest(authentication) || gamePlayer == null || player.getId() != gamePlayer.getPlayer().getId()){
             return new ResponseEntity<>(makeMap("error", "No player logged in"), HttpStatus.UNAUTHORIZED);
         }
-
+        if(newSalvoes.size()!= 5){
+            return new ResponseEntity<>(makeMap("error", "Invalid number of shots"), HttpStatus.CONFLICT);
+        }
         Game game = gamePlayer.getGame();
         int playerTurn;
         if(game.getGamePlayers().size()<2){

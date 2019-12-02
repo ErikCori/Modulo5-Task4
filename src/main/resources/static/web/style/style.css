@@ -149,3 +149,16 @@
     background-size: 85% 100%;
     background-position: center;
 }
+.circle{
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    text-align: center;
+    margin-left: 75%;
+}
+.title{
+    color:#ffcc00;
+    font-family: New Century;
+    font-weight: bold;
+    font-size: 50px;
+}
